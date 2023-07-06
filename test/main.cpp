@@ -2,6 +2,7 @@
 #include "librmreferee/enums.h"
 #include "librmreferee/packets.h"
 #include "librmreferee/rmreferee.h"
+#include "librmreferee/crc.h"
 #include <iostream>
 #include <cstring>
 using std::cout;

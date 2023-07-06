@@ -2,9 +2,13 @@
 project(rmreferee LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20 REQUIRED)
 
+set(STD_STREAM_LOGGER ON)
+
 enable_testing()
 
-include_directories(inc)
+if(STD_STREAM_LOGGER)
+    add_definitions(-DSTD_STREAM_LOGGER)
+endif()
 
 # librmreferee
 file(GLOB_RECURSE RMREFEREE_SRC src/*.cpp)

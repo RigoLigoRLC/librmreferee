@@ -2,6 +2,8 @@
 #include <array>
 #include <ranges> // C++20
 #include <vector>
+#include "librmreferee/crc.h"
+#include "librmreferee/log.h"
 #include "librmreferee/packets.h"
 #include "librmreferee/rmreferee.h"
 
@@ -62,7 +64,7 @@ namespace RMReferee {
 
         // Check packet size
         if (m_dataFifo.size() < RefereePacket::PacketExtrasLength + header.DataLength) {
-            m_dataFifo.pop_front();
+            // Do not pop front here as we may still have data to receive
             return 0;
         }
         
@@ -92,8 +94,10 @@ namespace RMReferee {
         m_dataFifo.erase(m_dataFifo.cbegin(), m_dataFifo.cbegin() + packetSize);
         RefereePacket* packet = m_factory.TryMakePacket(packetBuf.data(), packetBuf.size());
 
-        if (!packet) // TODO: LOGGING THIS
-            return false;
+        if (!packet) {
+            const uint16_t *packetId = reinterpret_cast<const uint16_t*>(packetBuf.data() + sizeof(PacketHeader));
+            Log::Log() << "[librmreferee] No factory method for packet 0x" << Log::hex << *packetId << Log::dec << ".\n";
+        }
 
         // Put this packet into packet queue
         m_packetQueue.push(std::unique_ptr<RefereePacket>(packet));
