@@ -1,4 +1,6 @@
 
+cmake_minimum_required(VERSION 3.21)
+
 project(rmreferee LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20 REQUIRED)
 
@@ -13,6 +15,11 @@ endif()
 # librmreferee
 file(GLOB_RECURSE RMREFEREE_SRC src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${RMREFEREE_SRC})
+target_include_directories(${PROJECT_NAME} PUBLIC inc)
+
+if(NOT PROJECT_IS_TOP_LEVEL)
+    set(RMREFEREE_LIBS ${PROJECT_NAME} PARENT_SCOPE)
+endif()
 
 # tests
 file(GLOB RMREFEREE_TEST_SRC test/*.cpp)
