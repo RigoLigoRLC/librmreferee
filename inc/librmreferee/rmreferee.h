@@ -7,7 +7,6 @@
 #include <map>
 #include <functional>
 #include "packets.h"
-#include "crc.h"
 
 namespace RMReferee {
     class PacketFactory {
@@ -25,7 +24,7 @@ namespace RMReferee {
         RefereePacket* TryMakePacket(const uint8_t *buf, size_t count) const;
 
     protected:
-        std::map<uint16_t, std::function<RefereePacket*(const char *)>> m_factoryMethods;
+        std::multimap<uint16_t, std::function<RefereePacket*(const char *)>> m_factoryMethods;
     };
 
     class RefereeRecvControl {

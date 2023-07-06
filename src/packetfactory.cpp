@@ -18,7 +18,10 @@ namespace RMReferee {
             return nullptr;
         
         // Construct packet
-        auto factoryMethod = m_factoryMethods.at(*packetId);
-        return factoryMethod(reinterpret_cast<const char *>(buf));
+        for(auto it = m_factoryMethods.lower_bound(*packetId); it != m_factoryMethods.upper_bound(*packetId); ++it)
+            if (auto packet = it->second(reinterpret_cast<const char *>(buf)))
+                return packet;
+        
+        return nullptr;
     }
 };

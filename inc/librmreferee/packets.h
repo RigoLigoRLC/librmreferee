@@ -13,6 +13,20 @@
     Referee system packets definition
 */
 
+#define REFEREE_PACKET(clazz,idenum) \
+    public: \
+        clazz() : RefereePacket() {} \
+        clazz(const char *buf) : RefereePacket() { REFEREE_COPYDATA; } \
+        clazz(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; } \
+        static uint16_t ClassPacketId() { return uint16_t(PacketType::idenum); } \
+        virtual uint16_t PacketId() override { return ClassPacketId(); } \
+        virtual uint16_t DataLength() override { return sizeof(S); } \
+        static RefereePacket* Make(const char* buf) { return new clazz(buf); } \
+        virtual bool Serialize(char* buffer, size_t bufferSize) override; \
+    protected: \
+        S m_data
+
+
 /*
 TEMPLATE
 
@@ -21,20 +35,7 @@ TEMPLATE
         struct S {
             ......
         } REFEREE_PACKED;
-        _____() : RefereePacket() {}
-        _____(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        _____(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::______); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new _____(buf); }
-        
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(_____, ENUMNAME);
     };
 
 */
@@ -93,20 +94,7 @@ namespace RMReferee {
             uint16_t currentStageTimeRemaining;
             uint64_t unixTimestamp;
         } REFEREE_PACKED;
-        GameStatusPacket() : RefereePacket() {}
-        GameStatusPacket(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        GameStatusPacket(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::GameStatus); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new GameStatusPacket(buf); }
-
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(GameStatusPacket, GameStatus);
     };
 
     // 0x0002 Game result
@@ -115,20 +103,7 @@ namespace RMReferee {
         struct S {
             GameResult gameResult;
         } REFEREE_PACKED;
-        GameResultPacket() : RefereePacket() {}
-        GameResultPacket(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        GameResultPacket(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::GameResultEvent); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new GameResultPacket(buf); }
-
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(GameResultPacket, GameResultEvent);
     };
 
     // 0x0003 Robot HP
@@ -138,20 +113,7 @@ namespace RMReferee {
             uint16_t Red1, Red2, Red3, Red4, Red5, Red7, RedOutpost, RedBase;
             uint16_t Blue1, Blue2, Blue3, Blue4, Blue5, Blue7, BlueOutpost, BlueBase;
         } REFEREE_PACKED;
-        RobotHPPacket() : RefereePacket() {}
-        RobotHPPacket(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        RobotHPPacket(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::RobotHP); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new RobotHPPacket(buf); }
-
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(RobotHPPacket, RobotHP);
     };
 
     // 0x0004 Dart State
@@ -188,20 +150,7 @@ namespace RMReferee {
             uint16_t chassisPowerLimit;
             PowerOutputState powerOutput;
         } REFEREE_PACKED;
-        RobotStatePacket() : RefereePacket() {}
-        RobotStatePacket(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        RobotStatePacket(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::RobotState); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new RobotStatePacket(buf); }
-        
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(RobotStatePacket, RobotState);
     };
 
     // 0x0202 Real-Time Heat Power State
@@ -219,20 +168,61 @@ namespace RMReferee {
             uint16_t heat17mm_2;
             uint16_t heat42mm;
         } REFEREE_PACKED;
-        HeatPowerStatePacket() : RefereePacket() {}
-        HeatPowerStatePacket(const char *buf) : RefereePacket() { REFEREE_COPYDATA; }
-        HeatPowerStatePacket(S data, uint8_t seq = 0) : RefereePacket() { m_data = data; m_sequenceNumber = seq; }
-
-
-        static uint16_t ClassPacketId() { return uint16_t(PacketType::HeatPowerState); }
-        virtual uint16_t PacketId() override { return ClassPacketId(); }
-        virtual uint16_t DataLength() override { return sizeof(S); }
-
-        static RefereePacket* Make(const char* buf) { return new HeatPowerStatePacket(buf); }
-        
-        virtual bool Serialize(char* buffer, size_t bufferSize) override;
-
-    protected:
-        S m_data;
+        REFEREE_PACKET(HeatPowerStatePacket, HeatPowerState);
     };
+
+    // 0x0203 Robot Coordinates
+
+    // 0x0204 Robot Buff
+
+    // 0x0205 Aerial Robot Countdown
+
+    // 0x0206 Damage Event
+
+    // 0x0207 Real-time Shooting Event
+
+    // 0x0208 Remaining Bullet And Coin Count
+
+    // 0x0209 RFID Identification State
+
+    // 0x020A Dart Control Command
+
+    // 0x0301 Interaction Message
+
+    // 0x0302 Custom Controller Message
+
+    // 0x0303 Minimap Interaction Message
+
+    // 0x0304 Keyboard Mouse Message
+    class KeyboardMouseMessagePacket : public RefereePacket {
+        struct S {
+            uint16_t mouseX, mouseY, mouseWheel;
+            uint8_t mouseLButton, mouseRButton;
+
+            struct {
+                bool keyW : 1;
+                bool keyA : 1;
+                bool keyS : 1;
+                bool keyD : 1;
+                bool keyShift : 1;
+                bool keyCtrl : 1;
+                bool keyQ : 1;
+                bool keyE : 1;
+                bool keyR : 1;
+                bool keyF : 1;
+                bool keyG : 1;
+                bool keyZ : 1;
+                bool keyX : 1;
+                bool keyC : 1;
+                bool keyV : 1;
+                bool keyB : 1;
+            } keys1 REFEREE_PACKED;
+
+            uint16_t reserved;
+        } REFEREE_PACKED;
+        REFEREE_PACKET(KeyboardMouseMessagePacket, KeyboardMouseMessage);
+    };
+
+    // 0x0305 ???
+
 }
